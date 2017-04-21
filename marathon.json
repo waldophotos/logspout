@@ -4,8 +4,8 @@
     "syslog+tls://logs5.papertrailapp.com:13639"
   ],
   "cpus": {{key_or_default "waldo/config/app/{{appId}}/cpus" "0.1"}},
-  "mem": {{key_or_default "waldo/config/app/{{appId}}/mem" "512"}},
-  "instances": {{key_or_default "waldo/config/app/{{appId}}/instances" "1"}},
+  "mem": {{key_or_default "waldo/config/app/{{appId}}/mem" "256"}},
+  "instances": {{key_or_default "waldo/config/app/{{appId}}/instances" "8"}},
   "constraints": [
     [
       "hostname",
@@ -16,7 +16,7 @@
     "type": "DOCKER",
     "docker": {
       "network": "BRIDGE",
-      "image": "gliderlabs/logspout",
+      "image": "docker-registry.devops.waldo.photos/logspout-1:{{tag}}",
       "portMappings": [
         {
           "containerPort": 0,

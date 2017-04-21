@@ -2,13 +2,23 @@ machine:
   environment:
     APP_NAME: $CIRCLE_PROJECT_REPONAME
     TAG: ${CIRCLE_BUILD_NUM}_$CIRCLE_SHA1
+    TEMPLATE_KEY: $APP_NAME/$TAG
+    DOCKER_REG_URL: docker-registry.devops.waldo.photos
+    DOCKER_BLD_TAG: $DOCKER_REG_URL/$APP_NAME:$TAG
   services:
     - docker
+
+dependencies:
+  override:
+    - docker build -t $DOCKER_BLD_TAG .
 
 deployment:
   dev:
     branch: master
     commands:
+      - yes | docker login -u $DEVOPS_DOCKER_USER -p $DEVOPS_DOCKER_PASS $DOCKER_REG_URL
+      - docker push $DOCKER_BLD_TAG
+      - echo "Pushed $DOCKER_BLD_TAG"
       - curl -sL https://s3.amazonaws.com/waldo-public/waldo-linux-amd64 -o $HOME/waldo
       - chmod +x $HOME/waldo
       - $HOME/waldo release $APP_NAME $TAG marathon.json
