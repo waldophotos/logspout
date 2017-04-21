@@ -65,11 +65,12 @@ func NewSyslogAdapter(route *router.Route) (router.LogAdapter, error) {
 		return nil, err
 	}
 
-	format := getopt("SYSLOG_FORMAT", "rfc5424")
+	format := getopt("SYSLOG_FORMAT", "custom")
 	priority := getopt("SYSLOG_PRIORITY", "{{.Priority}}")
 	hostname := getopt("SYSLOG_HOSTNAME", "{{.Container.Config.Hostname}}")
 	pid := getopt("SYSLOG_PID", "{{.Container.State.Pid}}")
 	tag := getopt("SYSLOG_TAG", "{{.ContainerName}}"+route.Options["append_tag"])
+	containerName := "{{.ContainerName}}"
 	structuredData := getopt("SYSLOG_STRUCTURED_DATA", "")
 	if route.Options["structured_data"] != "" {
 		structuredData = route.Options["structured_data"]
@@ -91,6 +92,9 @@ func NewSyslogAdapter(route *router.Route) (router.LogAdapter, error) {
 	case "rfc3164":
 		tmplStr = fmt.Sprintf("<%s>%s %s %s[%s]: %s\n",
 			priority, timestamp, hostname, tag, pid, data)
+	case "custom":
+		tmplStr = fmt.Sprintf("[%s]: %s\n",
+			containerName, data)
 	default:
 		return nil, errors.New("unsupported syslog format: " + format)
 	}

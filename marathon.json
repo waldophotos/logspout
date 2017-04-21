@@ -1,0 +1,44 @@
+{
+  "id": "{{appId}}",
+  "args": [
+    "syslog+tls://logs5.papertrailapp.com:13639"
+  ],
+  "cpus": {{key_or_default "waldo/config/app/{{appId}}/cpus" "0.1"}},
+  "mem": {{key_or_default "waldo/config/app/{{appId}}/mem" "512"}},
+  "instances": {{key_or_default "waldo/config/app/{{appId}}/instances" "1"}},
+  "constraints": [
+    [
+      "hostname",
+      "UNIQUE"
+    ]
+  ],
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "network": "BRIDGE",
+      "image": "gliderlabs/logspout",
+      "portMappings": [
+        {
+          "containerPort": 0,
+          "protocol": "tcp",
+          "name": null,
+          "labels": null
+        }
+      ],
+      "parameters": []
+    },
+    "volumes": [
+      {
+        "containerPath": "/var/run/docker.sock",
+        "hostPath": "/var/run/docker.sock",
+        "mode": "RW"
+      }
+    ]
+  },
+  "labels": {
+    "traefik.enable": "false"
+  },
+  "taskKillGracePeriodSeconds": 20,
+  "env": {},
+  "healthChecks": []
+}

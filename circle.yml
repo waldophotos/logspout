@@ -1,39 +1,15 @@
-version: 2
-jobs:
-  build:
-    machine: true
-    working_directory: ~/.go_workspace/src/github.com/gliderlabs/
-    environment:
-      DEBUG: true
-      GO_PROJECT: ../go/src/github.com/gliderlabs/$CIRCLE_PROJECT_REPONAME
-    steps:
-      - checkout
-      - run: |
-          go get github.com/golang/lint/golint
-      - run: |
-          make circleci
-      - run: |
-          make lint
-      - run: |
-          make build
-      - run: |
-          make build-custom
-      - run: |
-          make -e test-image-size
-      - run: |
-          make -e test
-      - run: |
-          make -e test-tls
-      - run: |
-          make -e test-custom
-      - run: |
-          make -e test-tls-custom
-      - store_artifacts:
-          path: build
-          destination: build
-      - deploy:
-          name: release
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "release" ]; then
-              make release
-            fi
+machine:
+  environment:
+    APP_NAME: $CIRCLE_PROJECT_REPONAME
+    TAG: ${CIRCLE_BUILD_NUM}_$CIRCLE_SHA1
+  services:
+    - docker
+
+deployment:
+  dev:
+    branch: master
+    commands:
+      - curl -sL https://s3.amazonaws.com/waldo-public/waldo-linux-amd64 -o $HOME/waldo
+      - chmod +x $HOME/waldo
+      - $HOME/waldo release $APP_NAME $TAG marathon.json
+      - $HOME/waldo deploy $APP_NAME $TAG dev:logspout
