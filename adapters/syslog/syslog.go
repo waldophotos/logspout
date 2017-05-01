@@ -96,7 +96,7 @@ func NewSyslogAdapter(route *router.Route) (router.LogAdapter, error) {
 			priority, timestamp, hostname, tag, pid, data)
 	case "custom":
 		tmplStr = fmt.Sprintf("[%s]: %s\n",
-			imageName+"-"+environment+"/"+containerName, data)
+			imageName+":"+environment+"/"+containerName, data)
 	default:
 		return nil, errors.New("unsupported syslog format: " + format)
 	}
