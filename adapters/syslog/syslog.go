@@ -66,11 +66,13 @@ func NewSyslogAdapter(route *router.Route) (router.LogAdapter, error) {
 	}
 
 	format := getopt("SYSLOG_FORMAT", "custom")
+	environment := getopt("WALDO_ENV", "dev")
 	priority := getopt("SYSLOG_PRIORITY", "{{.Priority}}")
 	hostname := getopt("SYSLOG_HOSTNAME", "{{.Container.Config.Hostname}}")
 	pid := getopt("SYSLOG_PID", "{{.Container.State.Pid}}")
 	tag := getopt("SYSLOG_TAG", "{{.ContainerName}}"+route.Options["append_tag"])
 	containerName := "{{.ContainerName}}"
+	imageName := "{{.Container.Config.Image}}"
 	structuredData := getopt("SYSLOG_STRUCTURED_DATA", "")
 	if route.Options["structured_data"] != "" {
 		structuredData = route.Options["structured_data"]
@@ -94,7 +96,7 @@ func NewSyslogAdapter(route *router.Route) (router.LogAdapter, error) {
 			priority, timestamp, hostname, tag, pid, data)
 	case "custom":
 		tmplStr = fmt.Sprintf("[%s]: %s\n",
-			containerName, data)
+			imageName+"-"+environment+"/"+containerName, data)
 	default:
 		return nil, errors.New("unsupported syslog format: " + format)
 	}

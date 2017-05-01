@@ -35,10 +35,12 @@
       }
     ]
   },
+  "env": {
+    "WALDO_ENV": "{{key "waldo/config/env"}}"
+  },
   "labels": {
     "traefik.enable": "false"
   },
   "taskKillGracePeriodSeconds": 20,
-  "env": {},
   "healthChecks": []
 }
