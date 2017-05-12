@@ -16,7 +16,7 @@
     "type": "DOCKER",
     "docker": {
       "network": "BRIDGE",
-      "image": "docker-registry.devops.waldo.photos/logspout-1:{{tag}}",
+      "image": "docker-registry.devops.waldo.photos/logspout:{{tag}}",
       "portMappings": [
         {
           "containerPort": 0,
